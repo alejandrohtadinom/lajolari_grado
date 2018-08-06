@@ -1,0 +1,22 @@
+{
+  "name": "Ask to your kitchen",
+  "description": "",
+  "image": "heroku/python",
+  "repository": "https://github.com/lajolari/Thesis-test01.git",
+  "keywords": ["python", "django" ],
+  "addons": [ "heroku-postgresql" ],
+  "env": {
+    "SECRET_KEY": {
+      "description": "7@%qkud!iud-gk+1$r@llqcd#jp6^95iexzudcb219yap3^z9e",
+      "generator": "secret"
+    }
+  },
+  "environments": {
+    "test": {
+      "scripts": {
+        "test-setup": "python manage.py collectstatic --noinput",
+        "test": "python manage.py test"
+      }
+    }
+  }
+}

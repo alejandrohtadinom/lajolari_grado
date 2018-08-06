@@ -1,0 +1,216 @@
+{% extends "basic_generic.html" %}
+{% block content %}
+<link rel="stylesheet" href="/static/assets/css/myown.css">
+            
+                <div class="row" id="addcoroto">
+                    <div class="col-lg-4 maldito"> <!-- buscar el codigo del contador en PU-->
+                        <div>
+                            <!-- <input v-model="input.ingrd" /> -->
+                            <h1>Ingredientes</h1>
+                            <input v-model="pared" type="text-area" @focus="showMessage()" >
+                            <input id="lleva" type="hidden">                          
+
+                            <!-- <ul>
+                                <li v-for="chichi in chichis" style="list-style: none">
+                                    ${chichi.ingrd}
+                                    
+                                </li>
+                            </ul> -->
+                            
+                            <!-- <input v-model="input.ingrd" />
+                            <a class="btn" href="javascript:void(0)" @click="addNewUser">Agregar Ingrediente</a>
+                             -->
+                             <p v-show="focus == true">Ingrese los ingredientes, separados por una coma ( , )</p>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="col-lg-3 maldito">
+                        <div>
+                            <h1>Condiciones</h1>
+                            <div class="form-check"><input class="form-check-input" v-model="restricciones" value="pasta" type="checkbox" id="Celiaco"><label class="form-check-label" for="Celiaco">Celiaco</label></div>
+                            <div class="form-check"><input class="form-check-input" v-model="restricciones" value="leche" type="checkbox" id="ILactosa"><label class="form-check-label" for="ILactosa">Intolerante a la Lactosa</label></div>
+                            <div class="form-check"><input class="form-check-input" v-model="restricciones" value="mani" type="checkbox" id="AlergicoN"><label class="form-check-label" for="AlergicoN">Alergia a las Nueces</label></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 maldito">
+                        <div>
+                            <h1>Categoría</h1>
+                            <select v-model="categoria">
+                                <optgroup label="Categorias" >
+                                    <option value="Desayuno" selected="">Desayuno</option>
+                                    <option value="Almuerzo">Almuerzo</option>
+                                    <option value="Cena">Cena</option>
+                                    <option value="Postre">Postre</option>
+                                    <option value="Bebida">Bebida</option>
+                                    <option value="Snacks">Snacks</option>
+                                    <option value="Complemento">Complemento</option>
+                                    <option value="General">General</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row hallomoto">
+                    <div class="col-lg-4"></div>
+                    <div class="col-lg-4"><button class="btn btn-primary newvalues" type="button" style="width:100%;height:100%;"  @click='mandarria()'>Buscar</button></div>
+                    <div class="col-lg-4"></div>
+                </div>
+                <div class="row containerreceta">
+                    <div class="">
+                        <h1>Te Ofrecemos Estas Recetas</h1>
+                        <ul v-show="gotresultp == true">
+                            <li v-for="chichi in chichis">
+                                <a v-bind:href="'/search/receta/'+ fukingid"> ${chichi}
+                            </li>
+                                      
+                        </ul>
+                        <h3 v-show="gotresultn == true">Lo sentimos, no hay recetas con los parametros ingresados</h3>
+                    </div>
+                </div>
+            </div>
+        
+<!-- vue.js files -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.5"></script>
+<script type="text/javascript">
+  
+  Vue.http.headers.common['X-CSRFToken'] = "{{ csrf_token }}";
+  new Vue({
+    el: '#starting',
+    delimiters: ['${','}'],
+    data: {
+        recetas: [],
+        loading: true,
+        currentReceta: {},
+        ingrediente_list: [],
+        message: null,
+        newReceta: { 'nombre': null, 'ingredientes':null, 'preparacion': null, 'tiempo_preparacion':null, 'metodo_coccion':null },
+        rows: [],
+        search_term: '',
+        pared: '',
+        count: '',
+        focus: false,
+        recetaSelect: '',
+        gotresultp: false,
+        gotresultn: false,
+        fukingid: '',
+        chichis: [],
+        counter: 0,
+        restricciones: [],
+        categoria: 'Desayuno',
+        subreceta: []
+
+    },
+    created: function() {
+      this.getRecetas();
+    },
+    methods: {
+        showMessage() {
+            this.focus = true;
+            if (this.gotresultp == true) {
+                this.chichis = [];
+            }
+        },
+        mandarria() {
+            document.getElementById("lleva").value = this.pared; //obtengo los valores del input "lleva"
+            this.tumama = this.pared.split(", ", 20); //divido el string "lleva" y lo guardo en tu mama
+            
+            this.getRecetas(this.tumama); //invoco a getrecetas con el parametro this.tumama
+
+        },
+        getRecetas: function($cualquier) { //recibo el parametro this.tumama y lo rebautizo "$cualquier"
+    
+            let api_url2 = '/api/addingrediente/';
+            if(this.search_term!==''||this.search_term!==null) {
+              api_url2 = `/api/addingrediente/?search=${this.search_term}`
+            }
+            this.loading = true;
+            this.$http.get(api_url2)
+                .then((response) => {
+                  this.ingrediente_list = response.data;
+                  this.loading = false;
+                    
+                })
+                .catch((err) => {
+                  this.loading = false;
+                  console.log(err);
+                })
+            console.log('halloo', this.ingrediente_list)
+
+            let api_url1 = '/api/addreceta/';
+            if(this.search_term!==''||this.search_term!==null) {
+            api_url1 = `/api/addreceta/?search=${this.search_term}`
+            }
+            this.loading = true;
+            this.$http.get(api_url1)
+                .then((response) => {
+                this.recetas = response.data;
+                this.loading = false;
+                    
+                })
+                .catch((err) => {
+                this.loading = false;
+                console.log(err);
+                })
+                
+                this.restriccionesorted = this.restricciones.sort();
+                console.log(this.restriccionesorted)
+                //BUSCADOR DE RECETAS 
+                for (let i = 0; i < this.recetas.length; i++) { //conteo por cada receta
+                    
+                    this.otraopcion = this.recetas[i].ingredientes; //guardo en esta variable, el array de ingredientes en la primera posicion de recetas.
+                    
+                    this.fuck = this.otraopcion.split(", "); //divide el array de ingredientes, separados por coma (,)
+
+                    this.fucksorted = this.fuck.sort(); //ordena por orden alfabetico los elementos del array this.fuck
+
+                    this.cualquiersorted = $cualquier.sort(); //organiza el array de ingredientes que introduce el usuario
+
+                if (this.fucksorted.length === this.cualquiersorted.length) { //cuando encuentre que los arrays tienen exactamente la misma longitud de caracteres, se parara
+                    if (this.categoria == 'General') { // filtro para opcion "general"
+                        this.counter = 0;  
+                        for (let j = 0; j < this.fucksorted.length; j++) { //hace el proceso sin problemas, normal
+                            if (this.fucksorted[j] === this.cualquiersorted[j]) {
+                            this.counter += 1;
+                            } // else {
+                                // 
+                           // } 
+                        }
+                        if (this.counter === this.fuck.length){
+                            this.fukingid = this.recetas[i].id;
+                            this.gotresultp = true;
+                            this.chichis.push(this.recetas[i].nombre);
+                        }
+                    } else { // Cuando no es general, evalua la categoria mem
+                        if (this.categoria === this.recetas[i].tipo) { //evalua la categoria y toma solo los elementos con el mismo tipo de receta
+                            this.counter = 0;  
+                            for (let j = 0; j < this.fucksorted.length; j++) { //proceso normal
+                                if (this.fucksorted[j] === this.cualquiersorted[j]) {
+                                    if (this.restriccionesorted[j] === this.fucksorted[j]) {
+                                        console.log('hubo coincidencia, aplica restricción')
+                                    } else {
+                                        this.counter += 1;
+                                    }
+                                    
+                                } 
+                            }
+                            if (this.counter === this.fuck.length){
+                                this.fukingid = this.recetas[i].id;
+                                this.gotresultp = true;
+                                this.chichis.push(this.recetas[i].nombre);
+                            }
+                        } 
+                    }
+                    
+                   
+                    
+                    
+                } 
+        }
+    }
+  });
+</script> 
+
+{% endblock %}
+

@@ -1,0 +1,21 @@
+{% extends "basic_generic.html" %}
+
+{% block content %}
+<div class="containersito">
+    <h1>Te Ofrecemos Estas Recetas</h1>
+
+    {% if receta_list %}
+    <ul>
+
+      {% for receta in receta_list %}
+      <li class="supportme">
+        <a href="{{ receta.get_absolute_url }}">{{ receta.nombre }} ({{ receta.tipo }})</a>
+      </li>
+      {% endfor %}
+
+    </ul>
+    {% else %}
+      <p>There are no books in the library.</p>
+    {% endif %}       
+</div>
+{% endblock %}
