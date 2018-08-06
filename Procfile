@@ -1,1 +1,1 @@
-web: gunicorn atyk-tesis.wsgi
+web: gunicorn boiling-castle-41180.wsgi
