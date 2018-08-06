@@ -17,6 +17,7 @@ virtualenv==15.2.0
 virtualenv-clone==0.3.0
 virtualenvwrapper==4.8.2
 virtualenvwrapper-win==1.2.5
+gunicorn==19.9.0
 
 [requires]
 
