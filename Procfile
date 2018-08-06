@@ -1,1 +1,1 @@
-web: gunicorn boiling-castle-41180.wsgi
+web: gunicorn atyk.wsgi
